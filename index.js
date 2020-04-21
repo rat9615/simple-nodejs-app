@@ -13,7 +13,7 @@ app.get('/', (req,res) =>{
 
 app.get('/index', (req,res) =>{
     let url = "https://en.wikipedia.org/w/api.php"
-    var params = {
+    let params = {
         action: "opensearch",
         search: req.query.person,
         limit: "1",
@@ -25,25 +25,31 @@ app.get('/index', (req,res) =>{
     Object.keys(params).forEach( (key) => {
         url += '&' + key + '=' + params[key]; 
     });
-
-    request(url, (err, res, body) =>{
+    
+    const x = request(url,(err,res, body) =>{
         if(err) {
-            res.render('404');
+            console.log(err);
         }
-        let result = JSON.parse(body);
-        let x = result[3][0];
-        x = x.substring(30, x.length);
-        res.locals.y = req.x;
+        else {
+            let result = JSON.parse(body);
+            let x = result[3][0];
+            x = x.substring(30, x.length);  
+            return x;
+        }  
     });
-    wikip(res.locals.x, (err,final) => {
+    
+    console.log(x);
+    /*wikip( , (err, final) => {
         if (err){
             console.log(err);
         }
         else{
             console.log(final);
         }
-      });
+    });*/
 });
+
+//wiki api request
 
 
 //port
