@@ -8,10 +8,10 @@ app.set("view engine", 'ejs');
 
 //routes
 app.get('/', (req,res) =>{
-    res.render('index', { search : 'null'});
+    res.render('index');
 });
 
-app.get('/index', (req,res) =>{
+app.get('/index', (req,response) =>{
     let url = "https://en.wikipedia.org/w/api.php"
     let params = {
         action: "opensearch",
@@ -25,32 +25,29 @@ app.get('/index', (req,res) =>{
     Object.keys(params).forEach( (key) => {
         url += '&' + key + '=' + params[key]; 
     });
-    
-    const x = request(url,(err,res, body) =>{
+
+    //get wikip search string
+    request(url,(err,res, body) =>{
         if(err) {
-            console.log(err);
+            response.redirect('404');
         }
-        else {
-            let result = JSON.parse(body);
-            let x = result[3][0];
-            x = x.substring(30, x.length);  
-            return x;
-        }  
+            result = JSON.parse(body);
+            x = result[3][0];
+            x = x.substring(30, x.length); 
+            //get wikip json
+            wikip(x , (err, final) => {
+                if (err){
+                    response.redirect('404');
+                }
+                else{
+                    const answers = final;
+                    response.send(answers);
+                }
+            });
     });
+
     
-    console.log(x);
-    /*wikip( , (err, final) => {
-        if (err){
-            console.log(err);
-        }
-        else{
-            console.log(final);
-        }
-    });*/
 });
-
-//wiki api request
-
 
 //port
 app.listen(3000, console.log("Listening at port 3000..."))
