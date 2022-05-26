@@ -20,7 +20,7 @@
   "dependencies": {
     "ejs": "^3.1.7",
     "express": "^4.17.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "nodemon": "^2.0.3",
     "request": "^2.88.2",
     "wiki-infobox-parser": "^0.1.11"
