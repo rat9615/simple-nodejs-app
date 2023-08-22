@@ -3,7 +3,7 @@ name: DevOps Metrics
 on:
   push:
     branches:
-      - main  # Adjust this to the branch you want to monitor
+      - master  # Adjust this to the branch you want to monitor
 
 jobs:
   metrics:
