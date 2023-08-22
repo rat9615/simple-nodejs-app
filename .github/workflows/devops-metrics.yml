@@ -3,7 +3,7 @@ name: Push GitHub Actions Metrics
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   push_metrics:
