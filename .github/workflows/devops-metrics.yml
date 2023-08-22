@@ -1,60 +1,60 @@
-name: DevOps Metrics
+name: Push GitHub Actions Metrics
 
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
-  metrics:
+  push_metrics:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: 14
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14
 
-    - name: Install Dependencies
-      run: |
-        sudo apt-get -yqq install libpq-dev
-        sudo apt-get update -y
-        sudo apt install redis-server -y
-        sudo apt-get install build-essential libcurl4-openssl-dev
-        sudo apt install qtbase5-dev qt5-qmake
-        sudo apt-get install g++ qtbase5-dev libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x curl
-        sudo apt-get update --fix-missing -y
-        sudo apt install postgresql postgresql-contrib -y
+      - name: Install Dependencies
+        run: |
+          sudo apt-get -yqq install libpq-dev
+          sudo apt-get update -y
+          sudo apt install redis-server -y
+          sudo apt-get install build-essential libcurl4-openssl-dev
+          sudo apt install qtbase5-dev qt5-qmake
+          sudo apt-get install g++ qtbase5-dev libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x curl
+          sudo apt-get update --fix-missing -y
+          sudo apt install postgresql postgresql-contrib -y
 
-    - name: Build
-      run: |
-        # npm run build
-        # echo "Build completed."
+      - name: Build
+        run: |
+          # npm run build
+          # echo "Build completed."
 
-    - name: Run Tests
-      run: |
-        # npm test
-        # echo "Tests completed."
+      - name: Run Tests
+        run: |
+          # npm test
+          # echo "Tests completed."
 
-    - name: Push Metrics to Prometheus Pushgateway
-      run: |
-        # Calculate build duration in seconds
-        BUILD_START=$(date -u +%s)
-        # npm run build
-        BUILD_SUCCESS=$?
-        BUILD_END=$(date -u +%s)
-        BUILD_DURATION=$((BUILD_END - BUILD_START))
+      - name: Push Metrics to Prometheus Pushgateway
+        run: |
+          # Replace these values with the actual counts you want to report
+          PUSHGATEWAY_URL=http://54.196.98.45:9091
+          PUSHES_COUNT=10
+          PULL_REQUESTS_COUNT=5
+          SUCCESS_COUNT=7
+          FAILURE_COUNT=3
 
-        echo "Build Duration (seconds): $BUILD_DURATION"
-        echo "Build Success: $BUILD_SUCCESS"
-
-        # Push metrics to Prometheus Pushgateway
-        cat <<EOF | curl --data-binary @- http://54.196.98.45:9091/metrics/job/github-actions
-        # TYPE build_duration_seconds gauge
-        build_duration_seconds $BUILD_DURATION
-        # TYPE build_success_status gauge
-        build_success_status $BUILD_SUCCESS
-        EOF
+          # Push metrics to Prometheus Pushgateway using the defined variable
+          cat <<EOF | curl --data-binary @- $PUSHGATEWAY_URL/metrics/job/github-actions
+          # TYPE github_actions_pushes_total gauge
+          github_actions_pushes_total $PUSHES_COUNT
+          # TYPE github_actions_pull_requests_total gauge
+          github_actions_pull_requests_total $PULL_REQUESTS_COUNT
+          # TYPE github_actions_runs_total gauge
+          github_actions_runs_total{status="success"} $SUCCESS_COUNT
+          github_actions_runs_total{status="failure"} $FAILURE_COUNT
+          EOF
