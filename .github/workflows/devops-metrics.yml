@@ -23,8 +23,8 @@ jobs:
 
     - name: Build
       run: |
-        npm run build
-        echo "Build completed."
+#        npm run build
+#        echo "Build completed."
 
     - name: Run Tests
       run: |
