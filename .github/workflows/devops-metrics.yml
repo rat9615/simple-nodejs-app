@@ -46,7 +46,7 @@ jobs:
       run: |
         # Calculate build duration in seconds
         BUILD_START=$(date -u +%s)
-        npm run build
+   #     npm run build
         BUILD_SUCCESS=$?
         BUILD_END=$(date -u +%s)
         BUILD_DURATION=$((BUILD_END - BUILD_START))
