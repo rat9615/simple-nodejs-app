@@ -58,3 +58,4 @@ jobs:
           github_actions_runs_total{status="success"} $SUCCESS_COUNT
           github_actions_runs_total{status="failure"} $FAILURE_COUNT
           EOF
+          
