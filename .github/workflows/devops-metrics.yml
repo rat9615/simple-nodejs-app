@@ -19,9 +19,6 @@ jobs:
         node-version: 14
 
     - name: Install Dependencies
-      run: npm install
-
-    - name: Build and run test
       run: |
         sudo apt-get -yqq install libpq-dev
         sudo apt-get update -y
@@ -34,19 +31,19 @@ jobs:
 
     - name: Build
       run: |
-#        npm run build
-#        echo "Build completed."
+        # npm run build
+        # echo "Build completed."
 
     - name: Run Tests
       run: |
-#        npm test
-#        echo "Tests completed."
+        # npm test
+        # echo "Tests completed."
 
     - name: Push Metrics to Prometheus Pushgateway
       run: |
         # Calculate build duration in seconds
         BUILD_START=$(date -u +%s)
-   #     npm run build
+        # npm run build
         BUILD_SUCCESS=$?
         BUILD_END=$(date -u +%s)
         BUILD_DURATION=$((BUILD_END - BUILD_START))
