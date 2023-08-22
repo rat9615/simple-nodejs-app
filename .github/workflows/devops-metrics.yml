@@ -47,5 +47,5 @@ jobs:
         echo "build_duration_seconds $BUILD_DURATION" > metrics.txt
         echo "build_success_status $BUILD_SUCCESS" >> metrics.txt
 
-        # Write metrics to a file for Prometheus to scrape
-        mv metrics.txt $GITHUB_WORKSPACE/metrics.txt
+        # Set up a simple web server to expose metrics
+        python -m http.server 8000 --bind 0.0.0.0 &
