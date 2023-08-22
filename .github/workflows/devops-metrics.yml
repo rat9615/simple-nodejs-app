@@ -1,0 +1,67 @@
+name: DevOps Metrics
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to the branch you want to monitor
+
+jobs:
+  metrics:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 14
+
+    - name: Install Dependencies
+      run: npm install  # Replace with your dependency installation command
+
+    - name: Build
+      run: |
+        npm run build  # Replace with your build command
+        echo "Build completed."
+
+    - name: Run Tests
+      run: |
+        npm test  # Replace with your test command
+        echo "Tests completed."
+
+    - name: Calculate Metrics
+      id: metrics
+      run: |
+        # Calculate build duration in seconds
+        BUILD_START=$(date -u +%s)
+        # Replace this with your actual build and test commands
+        # For example, if you use a testing framework, you might need to parse its output to determine test success.
+        # For simplicity, this example assumes success if the tests were run and the build completed.
+        BUILD_SUCCESS=true
+        BUILD_END=$(date -u +%s)
+        BUILD_DURATION=$((BUILD_END - BUILD_START))
+
+        echo "Build Duration (seconds): $BUILD_DURATION"
+        echo "Build Success: $BUILD_SUCCESS"
+
+        # Calculate test success rate (assuming all tests are pass)
+        TEST_SUCCESS_RATE=100
+
+        echo "Test Success Rate (%): $TEST_SUCCESS_RATE"
+
+        # Set the metrics as outputs
+        echo "::set-output name=build_duration::$BUILD_DURATION"
+        echo "::set-output name=test_success_rate::$TEST_SUCCESS_RATE"
+
+    - name: Upload Metrics
+      uses: actions/upload-artifact@v2
+      with:
+        name: metrics
+        path: metrics.txt  # You can replace this with your preferred format and location
+
+    - name: Display Metrics
+      run: |
+        echo "Build Duration (seconds): ${{ steps.metrics.outputs.build_duration }}"
+        echo "Test Success Rate (%): ${{ steps.metrics.outputs.test_success_rate }}"
