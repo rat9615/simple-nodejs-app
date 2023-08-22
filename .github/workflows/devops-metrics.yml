@@ -31,7 +31,7 @@ jobs:
         npm test
         echo "Tests completed."
 
-    - name: Emit Metrics
+    - name: Push Metrics to Prometheus Pushgateway
       run: |
         # Calculate build duration in seconds
         BUILD_START=$(date -u +%s)
@@ -43,9 +43,10 @@ jobs:
         echo "Build Duration (seconds): $BUILD_DURATION"
         echo "Build Success: $BUILD_SUCCESS"
 
-        # Emit metrics in Prometheus format
-        echo "build_duration_seconds $BUILD_DURATION" > metrics.txt
-        echo "build_success_status $BUILD_SUCCESS" >> metrics.txt
-
-        # Set up a simple web server to expose metrics
-        python -m http.server 8000 --bind 0.0.0.0 &
+        # Push metrics to Prometheus Pushgateway
+        cat <<EOF | curl --data-binary @- http://54.196.98.45:9091/metrics/job/github-actions
+        # TYPE build_duration_seconds gauge
+        build_duration_seconds $BUILD_DURATION
+        # TYPE build_success_status gauge
+        build_success_status $BUILD_SUCCESS
+        EOF
