@@ -38,23 +38,4 @@ jobs:
           # npm test
           # echo "Tests completed."
 
-      - name: Push Metrics to Prometheus Pushgateway
-        run: |
-          # Replace these values with the actual counts you want to report
-          PUSHGATEWAY_URL=http://3.80.247.174:9091
-          PUSHES_COUNT=10
-          PULL_REQUESTS_COUNT=5
-          SUCCESS_COUNT=7
-          FAILURE_COUNT=3
-
-          # Push metrics to Prometheus Pushgateway using the defined variable
-          cat <<EOF | curl --data-binary @- $PUSHGATEWAY_URL/metrics/job/github-actions
-          # TYPE github_actions_pushes_total gauge
-          github_actions_pushes_total $PUSHES_COUNT
-          # TYPE github_actions_pull_requests_total gauge
-          github_actions_pull_requests_total $PULL_REQUESTS_COUNT
-          # TYPE github_actions_runs_total gauge
-          github_actions_runs_total{status="success"} $SUCCESS_COUNT
-          github_actions_runs_total{status="failure"} $FAILURE_COUNT
-          EOF
           
