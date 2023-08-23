@@ -42,7 +42,7 @@ jobs:
       - name: Push Metrics to Prometheus Pushgateway
         run: |
           # Replace these values with the actual counts you want to report
-          PUSHGATEWAY_URL=http://54.196.98.45:9091
+          PUSHGATEWAY_URL=http://3.80.247.174:9091
           PUSHES_COUNT=10
           PULL_REQUESTS_COUNT=5
           SUCCESS_COUNT=7
