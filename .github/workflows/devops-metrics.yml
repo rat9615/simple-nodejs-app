@@ -1,5 +1,4 @@
 name: Push GitHub Actions Metrics
-#klzjvaskdjbasbkfadsj
 on:
   push:
     branches:
