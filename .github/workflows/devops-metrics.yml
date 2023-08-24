@@ -1,30 +1,37 @@
-name: Send Prometheus notification on RSpec outcome
-
-on:
-  push:
-    branches:
-      - master
-
 jobs:
   send_notification:
     runs-on: ubuntu-latest
     steps:
-      - name: Check RSpec status
-        run: |
-          if [ $? -eq 0 ]; then
-            echo "success"
-          else
-            echo "failed"
-          fi
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-      - name: Create notification file
-        run: |
-          echo "success_count=1" > notification.txt
-          if [ "$status" == "failed" ]; then
-            echo "failed_count=1" >> notification.txt
-          fi
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-      - name: Send Prometheus notification
-        run: |
-          curl -X POST -H "Content-Type: application/json" -d '{"data": {"success_count": 1, "failed_count": 0}}' http://3.84.90.146:9090/metrics
+      - name: Install dependencies
+        run: pip install prometheus_client
 
+      - name: Run tests
+        run: |
+          # Your test commands here
+
+      - name: Generate Prometheus Metrics
+        run: |
+          from prometheus_client import CollectorRegistry, Gauge, push_to_gateway, pushadd_to_gateway
+          
+          # Your code logic here
+          
+          # Create a Prometheus gauge metric
+          gauge = Gauge('github_actions_workflow_status', 'Workflow status', ['status'])
+          
+          # Set the metric value based on your logic
+          if success:
+              gauge.labels(status='success').set(1)
+          else:
+              gauge.labels(status='failed').set(1)
+          
+          # Push the metric to the Prometheus Pushgateway
+          registry = CollectorRegistry()
+          pushadd_to_gateway('3.84.90.146:9091', job='github-actions', registry=registry)
