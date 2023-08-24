@@ -25,7 +25,7 @@ jobs:
         else
           metric_value=0
         fi
-        payload="{\"metric\": {\"__name__\": \"workflow_status\", \"value\": $metric_value}}"
+        payload="{ \"metric\": {\"__name__\": \"workflow_status\", \"value\": $metric_value}}"
         echo "$payload" > payload.json
         curl -X POST \
           -H "Content-Type: application/json" \
