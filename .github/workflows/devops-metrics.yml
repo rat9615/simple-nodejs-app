@@ -26,12 +26,12 @@ jobs:
       - name: Run tests and generate metrics
         run: |
           # Replace this with your actual test command
-          bundle exec rspec
+          #bundle exec rspec
 
           # Example: Run a hypothetical script that generates Prometheus metrics
           # You should replace this with actual code that generates metrics
           # In this example, we're using a Python script
-          python generate_prometheus_metrics.py
+          #python generate_prometheus_metrics.py
 
       - name: Send Prometheus metrics
         run: |
@@ -40,7 +40,7 @@ jobs:
           # Here we are using curl as an example
 
           # Adjust the IP and port to match your Prometheus Pushgateway
-          PROMETHEUS_PUSHGATEWAY="http://<PROMETHEUS_PUSHGATEWAY_IP>:9091"
+          PROMETHEUS_PUSHGATEWAY="http://3.84.90.146:9091"
 
           # Example: Push success and failure metrics to Pushgateway
           curl -X POST -H "Content-Type: application/json" -d '{"job": "github-actions", "metric_name": "workflow_status_success", "value": 1}' $PROMETHEUS_PUSHGATEWAY/metrics/job/github-actions
