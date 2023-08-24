@@ -27,3 +27,4 @@ jobs:
       - name: Send Prometheus notification
         run: |
           curl -X POST -H "Content-Type: application/json" -d '{"data": {"success_count": 1, "failed_count": 0}}' http://3.84.90.146:9090/metrics
+
