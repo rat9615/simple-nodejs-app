@@ -1,3 +1,4 @@
+
 name: Send Prometheus notification on RSpec outcome
 
 on:
