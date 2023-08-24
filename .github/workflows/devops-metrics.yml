@@ -1,3 +1,10 @@
+name: Send Prometheus notification on RSpec outcome
+
+on:
+  push:
+    branches:
+      - master
+
 jobs:
   send_notification:
     runs-on: ubuntu-latest
@@ -5,33 +12,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          python-version: 3.x
+          ruby-version: 2.7
+
+      - name: Install Bundler
+        run: gem install bundler
 
       - name: Install dependencies
-        run: pip install prometheus_client
+        #run: bundle install
 
-      - name: Run tests
+      - name: Run tests and generate metrics
         run: |
-          # Your test commands here
+          # Replace this with your actual test command
+          bundle exec rspec
 
-      - name: Generate Prometheus Metrics
+          # Example: Run a hypothetical script that generates Prometheus metrics
+          # You should replace this with actual code that generates metrics
+          # In this example, we're using a Python script
+          python generate_prometheus_metrics.py
+
+      - name: Send Prometheus metrics
         run: |
-          from prometheus_client import CollectorRegistry, Gauge, push_to_gateway, pushadd_to_gateway
-          
-          # Your code logic here
-          
-          # Create a Prometheus gauge metric
-          gauge = Gauge('github_actions_workflow_status', 'Workflow status', ['status'])
-          
-          # Set the metric value based on your logic
-          if success:
-              gauge.labels(status='success').set(1)
-          else:
-              gauge.labels(status='failed').set(1)
-          
-          # Push the metric to the Prometheus Pushgateway
-          registry = CollectorRegistry()
-          pushadd_to_gateway('3.84.90.146:9091', job='github-actions', registry=registry)
+          # Replace with your actual logic to send metrics to Prometheus Pushgateway
+          # You need to use a tool or script to send metrics to Pushgateway
+          # Here we are using curl as an example
+
+          # Adjust the IP and port to match your Prometheus Pushgateway
+          PROMETHEUS_PUSHGATEWAY="http://3.84.90.146:9091"
+
+          # Example: Push success and failure metrics to Pushgateway
+          curl -X POST -H "Content-Type: application/json" -d '{"job": "github-actions", "metric_name": "workflow_status_success", "value": 1}' $PROMETHEUS_PUSHGATEWAY/metrics/job/github-actions
+          curl -X POST -H "Content-Type: application/json" -d '{"job": "github-actions", "metric_name": "workflow_status_failure", "value": 0}' $PROMETHEUS_PUSHGATEWAY/metrics/job/github-actions
