@@ -13,9 +13,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Get Workflow Status
-      run: echo "Workflow Status: " > workflow_status.txt
-
     - name: Send Workflow Status to Prometheus
       run: |
         echo "Sending Workflow Status to Prometheus..."
