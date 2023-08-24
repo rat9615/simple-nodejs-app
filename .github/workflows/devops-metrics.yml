@@ -22,7 +22,7 @@ jobs:
         run: gem install bundler
 
       - name: Install dependencies
-        run: bundle install
+        #run: bundle install
 
       - name: Run tests and generate metrics
         run: |
