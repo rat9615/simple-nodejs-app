@@ -1,4 +1,5 @@
 name: Send Workflow Status to Prometheus
+
 on:
   push:
     branches:
@@ -19,19 +20,15 @@ jobs:
       run: |
         echo "Sending Workflow Status to Prometheus..."
         status=$(cat workflow_status.txt)
-
         if [ "$status" == "success" ]; then
           metric_value=1
         else
           metric_value=0
         fi
-
         payload="{\"metric\": {\"__name__\": \"workflow_status\", \"value\": $metric_value}}"
         echo "$payload" > payload.json
-
         curl -X POST \
           -H "Content-Type: application/json" \
           -d @payload.json \
           http://3.84.90.146:9090/metrics
-
         echo "Workflow Status sent to Prometheus."
