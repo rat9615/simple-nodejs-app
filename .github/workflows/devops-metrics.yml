@@ -1,5 +1,4 @@
-name: Send Workflow Status to EC2
-
+name: Send Workflow Status to Prometheus
 on:
   push:
     branches:
@@ -16,18 +15,23 @@ jobs:
     - name: Get Workflow Status
       run: echo "Workflow Status: ${{ github.event.workflow_run.conclusion }}" >> workflow_status.txt
 
-    - name: Send Workflow Status to EC2
+    - name: Send Workflow Status to Prometheus
       run: |
-        echo "Sending Workflow Status to EC2..."
+        echo "Sending Workflow Status to Prometheus..."
         status=$(cat workflow_status.txt)
-        ec2_ip="3.84.90.146"
-        github_token="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"
-        payload="{\"event_type\": \"workflow_status\", \"client_payload\": {\"status\": \"$status\"}}"
+
+        if [ "$status" == "success" ]; then
+          metric_value=1
+        else
+          metric_value=0
+        fi
+
+        payload="{\"metric\": {\"__name__\": \"workflow_status\", \"value\": $metric_value}}"
         echo "$payload" > payload.json
+
         curl -X POST \
-          -H "Authorization: token ${github_token}" \
           -H "Content-Type: application/json" \
           -d @payload.json \
-          "https://api.github.com/repos/shahroozmehmood/simple-nodejs-app/dispatches"
-        
-        echo "Workflow Status sent to GitHub Dispatch Event."
+          http://3.84.90.146:9090/metrics
+
+        echo "Workflow Status sent to Prometheus."
