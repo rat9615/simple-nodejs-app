@@ -20,7 +20,6 @@ jobs:
         status=$(cat workflow_status.txt)
         ec2_ip="3.84.90.146"
         github_token="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"
-
         curl -X POST \
           -H "Authorization: token ${github_token}" \
           -H "Content-Type: application/json" \
