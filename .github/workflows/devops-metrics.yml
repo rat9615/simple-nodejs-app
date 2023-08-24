@@ -1,10 +1,9 @@
 name: Send Workflow Status to EC2
 
 on:
-  workflow_run:
-    workflows: ["Your Workflow Name Here"]
-    types:
-      - completed
+  push:
+    branches:
+      - master
 
 jobs:
   send-status:
@@ -24,6 +23,6 @@ jobs:
           -H "Authorization: token ${github_token}" \
           -H "Content-Type: application/json" \
           -d '{"event_type": "workflow_status", "client_payload": {"status": "'"$status"'"}}' \
-          "https://api.github.com/repos/YourUsername/YourRepo/dispatches"
+          "https://api.github.com/repos/shahroozmehmood/simple-nodejs-app/dispatches"
         
         echo "Workflow Status sent to GitHub Dispatch Event."
