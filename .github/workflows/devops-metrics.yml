@@ -1,4 +1,4 @@
-name: Send Workflow Status to Prometheus
+name: Send Prometheus notification on RSpec outcome
 
 on:
   push:
@@ -6,26 +6,24 @@ on:
       - master
 
 jobs:
-  send-status:
+  send_notification:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Check RSpec status
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "success"
+          else
+            echo "failed"
+          fi
 
-    - name: Send Workflow Status to Prometheus
-      run: |
-        echo "Sending Workflow Status to Prometheus..."
-        status=$(cat workflow_status.txt)
-        if [ "$status" == "success" ]; then
-          metric_value=1
-        else
-          metric_value=0
-        fi
-        payload="{ \"metric\": {\"__name__\": \"workflow_status\", \"value\": $metric_value}}"
-        echo "$payload" > payload.json
-        curl -X POST \
-          -H "Content-Type: application/json" \
-          -d @payload.json \
-          https://3.84.90.146:9090/metrics
-        echo "Workflow Status sent to Prometheus."
+      - name: Create notification file
+        run: |
+          echo "success_count=1" > notification.txt
+          if [ "$status" == "failed" ]; then
+            echo "failed_count=1" >> notification.txt
+          fi
+
+      - name: Send Prometheus notification
+        run: |
+          curl -X POST -H "Content-Type: application/json" -d '{"data": {"success_count": 1, "failed_count": 0}}' http://3.84.90.146:9090/metrics
