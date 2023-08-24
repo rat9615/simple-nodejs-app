@@ -1,42 +1,30 @@
+name: Send Workflow Status to EC2
 
-name: Push GitHub Actions Metrics
 on:
-  push:
-    branches:
-      - master
+  workflow_run:
+    workflows: ["Your Workflow Name Here"]
+    types:
+      - completed
 
 jobs:
-  push_metrics:
+  send-status:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    - name: Get Workflow Status
+      run: echo "Workflow Status: ${{ github.event.workflow_run.conclusion }}" >> workflow_status.txt
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
+    - name: Send Workflow Status to EC2
+      run: |
+        echo "Sending Workflow Status to EC2..."
+        status=$(cat workflow_status.txt)
+        ec2_ip="3.84.90.146"
+        github_token="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"
 
-      - name: Install Dependencies
-        run: |
-          sudo apt-get -yqq install libpq-dev
-          sudo apt-get update -y
-          sudo apt install redis-server -y
-          sudo apt-get install build-essential libcurl4-openssl-dev
-          sudo apt install qtbase5-dev qt5-qmake
-          sudo apt-get install g++ qtbase5-dev libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x curl
-          sudo apt-get update --fix-missing -y
-          sudo apt install postgresql postgresql-contrib -y
-
-      - name: Build
-        run: |
-           npm run build
-          # echo "Build completed."
-
-      - name: Run Tests
-        run: |
-          # npm test
-          # echo "Tests completed."
-
-          
+        curl -X POST \
+          -H "Authorization: token ${github_token}" \
+          -H "Content-Type: application/json" \
+          -d '{"event_type": "workflow_status", "client_payload": {"status": "'"$status"'"}}' \
+          "https://api.github.com/repos/YourUsername/YourRepo/dispatches"
+        
+        echo "Workflow Status sent to GitHub Dispatch Event."
