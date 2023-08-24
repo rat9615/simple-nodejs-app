@@ -19,10 +19,12 @@ jobs:
         status=$(cat workflow_status.txt)
         ec2_ip="3.84.90.146"
         github_token="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"
+        payload='{"event_type": "workflow_status", "client_payload": {"status": "'"$status"'"}}'
+        echo "$payload" > payload.json
         curl -X POST \
           -H "Authorization: token ${github_token}" \
           -H "Content-Type: application/json" \
-          -d '{"event_type": "workflow_status", "client_payload": {"status": "'"$status"'"}}' \
+          -d @payload.json \
           "https://api.github.com/repos/shahroozmehmood/simple-nodejs-app/dispatches"
         
         echo "Workflow Status sent to GitHub Dispatch Event."
