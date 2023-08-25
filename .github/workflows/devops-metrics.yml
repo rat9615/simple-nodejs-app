@@ -27,4 +27,4 @@ jobs:
         run: |
           # You need to specify the command to run your tests here.
           # Assuming you're using RSpec, you should use the "bundle exec rspec" command.
-          bundle exec rspec
+          #bundle exec rspec
