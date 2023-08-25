@@ -1,42 +1,47 @@
+name: Send Prometheus notification on RSpec outcome
 
-name: Push GitHub Actions Metrics
 on:
   push:
     branches:
       - master
 
 jobs:
-  push_metrics:
+  send_notification:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          node-version: 14
+          ruby-version: 2.7
 
-      - name: Install Dependencies
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Install dependencies
+        #run: bundle install
+
+      - name: Run tests and generate metrics
         run: |
-          sudo apt-get -yqq install libpq-dev
-          sudo apt-get update -y
-          sudo apt install redis-server -y
-          sudo apt-get install build-essential libcurl4-openssl-dev
-          sudo apt install qtbase5-dev qt5-qmake
-          sudo apt-get install g++ qtbase5-dev libqt5webkit5-dev gstreamer1.0-plugins-base gstreamer1.0-tools gstreamer1.0-x curl
-          sudo apt-get update --fix-missing -y
-          sudo apt install postgresql postgresql-contrib -y
+          # Replace this with your actual test command
+          #bundle exec rspec
 
-      - name: Build
+          # Example: Run a hypothetical script that generates Prometheus metrics
+          # You should replace this with actual code that generates metrics
+          # In this example, we're using a Python script
+          #python generate_prometheus_metrics.py
+
+      - name: Send Prometheus metrics
         run: |
-           npm run build
-          # echo "Build completed."
+          # Replace with your actual logic to send metrics to Prometheus Pushgateway
+          # You need to use a tool or script to send metrics to Pushgateway
+          # Here we are using curl as an example
 
-      - name: Run Tests
-        run: |
-          # npm test
-          # echo "Tests completed."
+          # Adjust the IP and port to match your Prometheus Pushgateway
+          #PROMETHEUS_PUSHGATEWAY="http://3.84.90.146:9091"
 
-          
+          # Example: Push success and failure metrics to Pushgateway
+          curl -X POST -H "Content-Type: application/json" -d '{"job": "github-actions", "metric_name": "workflow_status_success", "value": 1}' $PROMETHEUS_PUSHGATEWAY/metrics/job/github-actions
+          curl -X POST -H "Content-Type: application/json" -d '{"job": "github-actions", "metric_name": "workflow_status_failure", "value": 0}' $PROMETHEUS_PUSHGATEWAY/metrics/job/github-actions
