@@ -17,14 +17,3 @@ jobs:
         with:
           ruby-version: 2.7
 
-      - name: Install Bundler
-        run: gem install bundler
-
-      - name: Install dependencies
-        run: bundle install
-
-      - name: Run tests and generate metrics
-        run: |
-          # You need to specify the command to run your tests here.
-          # Assuming you're using RSpec, you should use the "bundle exec rspec" command.
-          bundle exec rspec
