@@ -24,13 +24,4 @@ jobs:
         #run: bundle install
 
       - name: Run tests and generate metrics
-        run: |
-          # Replace this with your actual test command
-          #bundle exec rspec
-
-          # Example: Run a hypothetical script that generates Prometheus metrics
-          # You should replace this with actual code that generates metrics
-          # In this example, we're using a Python script
-          #python generate_prometheus_metrics.py
-
     
