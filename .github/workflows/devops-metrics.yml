@@ -21,27 +21,10 @@ jobs:
         run: gem install bundler
 
       - name: Install dependencies
-        #run: bundle install
+        run: bundle install
 
       - name: Run tests and generate metrics
         run: |
-          # Replace this with your actual test command
-          #bundle exec rspec
-
-          # Example: Run a hypothetical script that generates Prometheus metrics
-          # You should replace this with actual code that generates metrics
-          # In this example, we're using a Python script
-          #python generate_prometheus_metrics.py
-
-      - name: Send Prometheus metrics
-        run: |
-          # Replace with your actual logic to send metrics to Prometheus Pushgateway
-          # You need to use a tool or script to send metrics to Pushgateway
-          # Here we are using curl as an example
-
-          # Adjust the IP and port to match your Prometheus Pushgateway
-          #PROMETHEUS_PUSHGATEWAY="http://3.84.90.146:9091"
-
-          # Example: Push success and failure metrics to Pushgateway
-          curl -X POST -H "Content-Type: application/json" -d '{"job": "github-actions", "metric_name": "workflow_status_success", "value": 1}' $PROMETHEUS_PUSHGATEWAY/metrics/job/github-actions
-          curl -X POST -H "Content-Type: application/json" -d '{"job": "github-actions", "metric_name": "workflow_status_failure", "value": 0}' $PROMETHEUS_PUSHGATEWAY/metrics/job/github-actions
+          # You need to specify the command to run your tests here.
+          # Assuming you're using RSpec, you should use the "bundle exec rspec" command.
+          bundle exec rspec
