@@ -1,32 +1,38 @@
-name: Deploy To Prod Server
+name: Decision
 
 on:
   push:
     branches:
-      - production
+      - '*'
 
 jobs:
-  deploy:
-    name: Capistrano Deploy to Server
-    runs-on: ubuntu-20.04
-    services:
-      postgres:
-        image: postgres:13.4
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options:
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    
+  decide:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Set SECRET_PROD_USER environment variable
-        env:
-          SECRET_PROD_USER: ${{ secrets.PROD_USER }}
-        run: echo "PROD_USER=${{ env.SECRET_PROD_USER }}"
-        
-      - name: Checkout Code
-        uses: actions/checkout@v2
+      - name: Determine Branch
+        id: branch
+        run: echo "::set-output name=branch::${GITHUB_REF##*/}"
+
+      - name: Decide Workflow
+        id: decide
+        run: |
+          if [[ ${{ steps.branch.outputs.branch }} == "master" ]]; then
+            echo "Running Master Workflow"
+            echo "::set-output name=workflow::master.yml"
+          elif [[ ${{ steps.branch.outputs.branch }} == "production" ]]; then
+            echo "Running Production Workflow"
+            echo "::set-output name=workflow::prod.yml"
+          elif [[ ${{ steps.branch.outputs.branch }} == "dev" ]]; then
+            echo "Running Dev Workflow"
+            echo "::set-output name=workflow::dev.yml"
+          else
+            echo "No Workflow Found for Branch"
+            exit 1
+          fi
+
+      - name: Run Relevant Workflow
+        run: |
+          workflow_file=".github/workflows/${{ steps.decide.outputs.workflow }}"
+          echo "Using Workflow File: $workflow_file"
+          ./${workflow_file}
