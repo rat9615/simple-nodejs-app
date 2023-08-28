@@ -1,10 +1,10 @@
 
-name: Deploy To Test Server
+name: Deploy To Dev Server
 
 on:
   push:
     branches:
-      - test
+      - dev
 
 jobs:
   deploy:
@@ -26,8 +26,8 @@ jobs:
     steps:
       - name: Set SECRET_TEST_USER environment variable
         env:
-          SECRET_TEST_USER: ${{ secrets.TEST_USER }}
-        run: echo "TEST_USER=${{ env.SECRET_TEST_USER }}"
+          SECRET_DEV_USER: ${{ secrets.DEV_USER }}
+        run: echo "DEV_USER=${{ env.SECRET_DEV_USER }}"
         
       - name: Checkout Code
         uses: actions/checkout@v2
