@@ -41,8 +41,9 @@ jobs:
       - name: Run Relevant Workflow
         uses: actions/checkout@v2
 
-      - name: Execute Relevant Workflow
+      - name: Run Relevant Workflow
         run: |
-          workflow_file="${{ steps.set_workflow_file.outputs.workflow_file }}"
+          workflow_file=".github/workflows/${{ steps.decide.outputs.workflow }}"
           echo "Using Workflow File: $workflow_file"
-          ./${workflow_file}
+          ./$workflow_file
+
