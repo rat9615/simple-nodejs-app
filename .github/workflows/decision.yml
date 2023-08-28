@@ -10,6 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o ~/githubcli-archive-keyring.gpg
+          echo "deb [signed-by=~/githubcli-archive-keyring.gpg arch=all] https://cli.github.com/packages stable main" | tee ~/github-cli.list
+          sudo mv ~/github-cli.list /etc/apt/sources.list.d/github-cli.list
+          sudo apt update
+          sudo apt install -y gh
+
       - name: Determine Branch
         id: branch
         run: echo "::set-output name=branch::${GITHUB_REF##*/}"
@@ -31,14 +39,17 @@ jobs:
             exit 1
           fi
 
-      - name: Grant Execute Permission to prod.yml
-        run: chmod +x .github/workflows/prod.yml
-
-      - name: Run Relevant Workflow
+      - name: Trigger Relevant Workflow
         uses: actions/checkout@v2
 
-      - name: Execute Relevant Workflow
+      - name: Run Relevant Workflow
         run: |
-          workflow_file="${{ steps.decide.outputs.workflow }}"
+          workflow_file=".github/workflows/${{ steps.decide.outputs.workflow }}"
           echo "Using Workflow File: $workflow_file"
-          .github/workflows/"$workflow_file"
+          echo "::set-env name=WORKFLOW_FILE::$workflow_file"
+
+      - name: Execute Workflow
+        run: |
+          workflow_file=$WORKFLOW_FILE
+          echo "Running Workflow: $workflow_file"
+          gh workflow run "$workflow_file" --ref "${{ github.ref }}" --env "WORKFLOW_FILE=$workflow_file"
