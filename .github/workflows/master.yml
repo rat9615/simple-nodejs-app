@@ -26,7 +26,7 @@ jobs:
       - name: Set SECRET_MASTER_USER environment variable
         env:
           SECRET_MASTER_USER: ${{ secrets.MASTER_USER }}
-        run: echo "MASTER_USER=${SECRET_MASTER_USER}"
+        run: echo "MASTER_USER=${SECRET.MASTER_USER}"
         
       - name: Checkout Code
         uses: actions/checkout@v2
