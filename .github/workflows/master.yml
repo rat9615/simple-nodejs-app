@@ -23,8 +23,10 @@ jobs:
           --health-retries 5
     
     steps:
-      - name: Print Master User Secret
-        run: echo "MASTER_USER=${{ secrets.MASTER_USER }}"
+      - name: Set MASTER_USER environment variable
+        env:
+          MASTER_USER: ${{ secrets.MASTER_USER }}
+        run: echo "MASTER_USER=${MASTER_USER}"
         
       - name: Checkout Code
         uses: actions/checkout@v2
