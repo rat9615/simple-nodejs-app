@@ -1,0 +1,30 @@
+name: Deploy To Test Server
+on:
+  push:
+    branches: [test]
+jobs:
+  deploy:
+    name: Capistrano Deploy to Server
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      
+      # Add your deployment steps here
+      
+      # Example:
+      #- name: Deploy with Capistrano
+      #  run: |
+          # Add your Capistrano deployment command here
