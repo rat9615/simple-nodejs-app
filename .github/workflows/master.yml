@@ -1,7 +1,10 @@
 name: Deploy To master Server
+
 on:
   push:
-    branches: [master]
+    branches:
+      - master
+
 jobs:
   deploy:
     name: Capistrano Deploy to Server
@@ -18,13 +21,10 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+    
     steps:
+      - name: Print Master User Secret
+        run: echo "MASTER_USER=${{ secrets.MASTER_USER }}"
+        
       - name: Checkout Code
         uses: actions/checkout@v2
-      
-      # Add your deployment steps here
-      
-      # Example:
-      #- name: Deploy with Capistrano
-      #  run: |
-          # Add your Capistrano deployment command here
