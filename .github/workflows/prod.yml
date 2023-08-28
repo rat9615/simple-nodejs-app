@@ -1,0 +1,32 @@
+name: Deploy To Prod Server
+
+on:
+  push:
+    branches:
+      - production
+
+jobs:
+  deploy:
+    name: Capistrano Deploy to Server
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+      - name: Set SECRET_PROD_USER environment variable
+        env:
+          SECRET_PROD_USER: ${{ secrets.PROD_USER }}
+        run: echo "PROD_USER=${{ env.SECRET_PROD_USER }}"
+        
+      - name: Checkout Code
+        uses: actions/checkout@v2
