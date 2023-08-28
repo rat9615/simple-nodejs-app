@@ -31,14 +31,18 @@ jobs:
             exit 1
           fi
 
-      - name: Grant Execute Permission to prod.yml
-        run: chmod +x .github/workflows/prod.yml
+      - name: Set Workflow File
+        id: set_workflow_file
+        run: echo "::set-output name=workflow_file::.github/workflows/${{ steps.decide.outputs.workflow }}"
+
+      - name: Grant Execute Permission to Detected Branch Workflow
+        run: chmod +x "${{ steps.set_workflow_file.outputs.workflow_file }}"
 
       - name: Run Relevant Workflow
         uses: actions/checkout@v2
 
       - name: Execute Relevant Workflow
         run: |
-          workflow_file="${{ steps.decide.outputs.workflow }}"
+          workflow_file="${{ steps.set_workflow_file.outputs.workflow_file }}"
           echo "Using Workflow File: $workflow_file"
-          .github/workflows/"$workflow_file"
+          ./${workflow_file}
