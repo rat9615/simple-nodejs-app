@@ -4,7 +4,7 @@ name: Deploy To Test Server
 on:
   push:
     branches:
-      - Test
+      - test
 
 jobs:
   deploy:
