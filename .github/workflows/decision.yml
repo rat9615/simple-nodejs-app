@@ -1,0 +1,41 @@
+name: Decision
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  decide:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Determine Branch
+        id: branch
+        run: echo "::set-output name=branch::${GITHUB_REF##*/}"
+
+      - name: Decide Workflow
+        id: decide
+        run: |
+          if [[ ${{ steps.branch.outputs.branch }} == "master" ]]; then
+            echo "Running Master Workflow"
+            echo "::set-output name=workflow::master.yml"
+          elif [[ ${{ steps.branch.outputs.branch }} == "staging" ]]; then
+            echo "Running Staging Workflow"
+            echo "::set-output name=workflow::staging.yml"
+          elif [[ ${{ steps.branch.outputs.branch }} == "production" ]]; then
+            echo "Running Production Workflow"
+            echo "::set-output name=workflow::production.yml"
+          else
+            echo "No Workflow Found for Branch"
+            exit 1
+          fi
+
+      - name: Run Relevant Workflow
+        uses: actions/checkout@v2
+
+      - name: Execute Relevant Workflow
+        run: |
+          workflow_file="${{ steps.decide.outputs.workflow }}"
+          echo "Using Workflow File: $workflow_file"
+          .github/workflows/"$workflow_file"
