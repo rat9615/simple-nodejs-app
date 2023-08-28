@@ -24,7 +24,7 @@ jobs:
           --health-retries 5
     
     steps:
-      - name: Set SECRET_TEST_USER environment variable
+      - name: Set SECRET_MASTER_USER environment variable
         env:
           SECRET_MASTER_USER: ${{ secrets.MASTER_USER }}
         run: echo "MASTER_USER=${{ env.SECRET_MASTER_USER }}"
