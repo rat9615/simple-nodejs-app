@@ -1,49 +1,32 @@
-name: Merge Decision Workflow
+name: Deploy To master Server
 
 on:
   push:
     branches:
-      - 'master'  # Replace with your main branch name
-  pull_request:
-    branches:
-      - 'development'
-      - 'staging'
+      - master
 
 jobs:
-  determine-branch:
-    runs-on: ubuntu-latest
+  deploy:
+    name: Capistrano Deploy to Server
+    runs-on: ubuntu-20.04
+    services:
+      postgres:
+        image: postgres:13.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
     steps:
-      - name: Check out code
+      - name: Set SECRET_MASTER_USER environment variable
+        env:
+          SECRET_MASTER_USER: ${{ secrets.MASTER_USER }}
+        run: echo "MASTER_USER=${SECRET_MASTER_USER}"
+        
+      - name: Checkout Code
         uses: actions/checkout@v2
-
-      - name: Determine Target Branch
-        id: determine-branch
-        run: |
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            echo "::set-output name=branch::${{ github.ref }}"
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "::set-output name=branch::${{ github.base_ref }}"
-          else
-            echo "Unsupported event: ${{ github.event_name }}"
-            exit 1
-          fi
-
-  run-workflow:
-    runs-on: ubuntu-latest
-    needs: determine-branch
-    steps:
-      - name: Trigger Development Workflow
-        if: ${{ needs.determine-branch.outputs.branch == 'refs/heads/development' }}
-        run: |
-          echo "Setting MASTER_USER=${MASTER_USER}"
-          echo "::set-env name=MASTER_USER::${MASTER_USER}"
-          echo "Triggering Development Workflow"
-          # Add the steps and commands to run your development workflow here
-
-      - name: Trigger Staging Workflow
-        if: ${{ needs.determine-branch.outputs.branch == 'refs/heads/staging' }}
-        run: |
-          echo "Setting MASTER_USER=${MASTER_USER}"
-          echo "::set-env name=MASTER_USER::${MASTER_USER}"
-          echo "Triggering Staging Workflow"
-          # Add the steps and commands to run your staging workflow here
