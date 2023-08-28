@@ -27,7 +27,7 @@ jobs:
       - name: Set SECRET_TEST_USER environment variable
         env:
           SECRET_TEST_USER: ${{ secrets.TEST_USER }}
-        run: echo "MASTER_USER=${{ env.SECRET_TEST_USER }}"
+        run: echo "TEST_USER=${{ env.SECRET_TEST_USER }}"
         
       - name: Checkout Code
         uses: actions/checkout@v2
