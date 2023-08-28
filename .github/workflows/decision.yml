@@ -30,6 +30,10 @@ jobs:
             echo "No Workflow Found for Branch"
             exit 1
           fi
+
+      - name: Grant Execute Permission to prod.yml
+        run: chmod +x .github/workflows/prod.yml
+
       - name: Run Relevant Workflow
         uses: actions/checkout@v2
 
