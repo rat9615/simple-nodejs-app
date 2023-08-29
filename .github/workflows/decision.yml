@@ -21,13 +21,13 @@ jobs:
         run: |
           if [[ "${{ steps.branch.outputs.branch }}" == "master" ]]; then
             echo "Running Master Workflow"
-            echo "::set-output name=workflow::master.yml"
+            echo "master.yml" >> $GITHUB_ENV
           elif [[ "${{ steps.branch.outputs.branch }}" == "prod" ]]; then
             echo "Running Production Workflow"
-            echo "::set-output name=workflow::prod.yml"
+            echo "prod.yml" >> $GITHUB_ENV
           elif [[ "${{ steps.branch.outputs.branch }}" == "dev" ]]; then
             echo "Running Dev Workflow"
-            echo "::set-output name=workflow::dev.yml"
+            echo "dev.yml" >> $GITHUB_ENV
           else
             echo "No Workflow Found for Branch"
             exit 1
@@ -35,6 +35,7 @@ jobs:
 
       - name: Run Relevant Workflow
         run: |
-          workflow_file="${{ steps.decide.outputs.workflow }}"
+          workflow_file="${{ env.GITHUB_WORKSPACE }}/.github/workflows/${{ steps.decide.outputs.workflow }}"
           echo "Using Workflow File: $workflow_file"
-          # Add logic to run the selected workflow file here
+          chmod +x $workflow_file
+          $workflow_file
