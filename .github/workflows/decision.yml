@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install -y gh
       - name: Determine Branch
         id: branch
         run: echo "::set-output name=branch::${GITHUB_REF##*/}"
@@ -30,20 +36,16 @@ jobs:
             echo "No Workflow Found for Branch"
             exit 1
           fi
-
-      - name: Set Workflow File
-        id: set_workflow_file
-        run: echo "::set-output name=workflow_file::.github/workflows/${{ steps.decide.outputs.workflow }}"
-
-      - name: Grant Execute Permission to Detected Branch Workflow
-        run: chmod +x "${{ steps.set_workflow_file.outputs.workflow_file }}"
-
-      - name: Run Relevant Workflow
+      - name: Trigger Relevant Workflow
         uses: actions/checkout@v2
 
       - name: Run Relevant Workflow
         run: |
           workflow_file=".github/workflows/${{ steps.decide.outputs.workflow }}"
           echo "Using Workflow File: $workflow_file"
-          ./$workflow_file
-
+          echo "::set-env name=WORKFLOW_FILE::$workflow_file"
+      - name: Execute Workflow
+        run: |
+          workflow_file=$WORKFLOW_FILE
+          echo "Running Workflow: $workflow_file"
+          gh workflow run "$workflow_file" --ref "${{ github.ref }}" --env "WORKFLOW_FILE=$workflow_file"
