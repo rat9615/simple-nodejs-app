@@ -10,13 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download and Install GitHub CLI
-        run: |
-          wget https://github.com/cli/cli/releases/latest/download/gh_linux_amd64.tar.gz
-          tar -xvf gh_linux_amd64.tar.gz
-          sudo mv gh_*/bin/gh /usr/local/bin/
-          rm -rf gh_linux_amd64.tar.gz gh_*
-      
       - name: Determine Branch
         id: branch
         run: echo "::set-output name=branch::${GITHUB_REF##*/}"
@@ -51,4 +44,4 @@ jobs:
         run: |
           workflow_file=$WORKFLOW_FILE
           echo "Running Workflow: $workflow_file"
-          gh workflow run "$workflow_file" --ref "${{ github.ref }}" --env "WORKFLOW_FILE=$workflow_file"
+          # Add your workflow execution command here
