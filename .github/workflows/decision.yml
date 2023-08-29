@@ -10,12 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install GitHub CLI
+      - name: Download and Install GitHub CLI
         run: |
-          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-          sudo apt-add-repository https://cli.github.com/packages
-          sudo apt update
-          sudo apt install -y gh
+          wget https://github.com/cli/cli/releases/latest/download/gh_linux_amd64.tar.gz
+          tar -xvf gh_linux_amd64.tar.gz
+          sudo mv gh_*/bin/gh /usr/local/bin/
+          rm -rf gh_linux_amd64.tar.gz gh_*
+      
       - name: Determine Branch
         id: branch
         run: echo "::set-output name=branch::${GITHUB_REF##*/}"
@@ -23,19 +24,20 @@ jobs:
       - name: Decide Workflow
         id: decide
         run: |
-          if [[ ${{ steps.branch.outputs.branch }} == "master" ]]; then
+          if [[ "${{ steps.branch.outputs.branch }}" == "master" ]]; then
             echo "Running Master Workflow"
             echo "::set-output name=workflow::master.yml"
-          elif [[ ${{ steps.branch.outputs.branch }} == "production" ]]; then
+          elif [[ "${{ steps.branch.outputs.branch }}" == "production" ]]; then
             echo "Running Production Workflow"
             echo "::set-output name=workflow::prod.yml"
-          elif [[ ${{ steps.branch.outputs.branch }} == "dev" ]]; then
+          elif [[ "${{ steps.branch.outputs.branch }}" == "dev" ]]; then
             echo "Running Dev Workflow"
             echo "::set-output name=workflow::dev.yml"
           else
             echo "No Workflow Found for Branch"
             exit 1
           fi
+
       - name: Trigger Relevant Workflow
         uses: actions/checkout@v2
 
@@ -44,6 +46,7 @@ jobs:
           workflow_file=".github/workflows/${{ steps.decide.outputs.workflow }}"
           echo "Using Workflow File: $workflow_file"
           echo "::set-env name=WORKFLOW_FILE::$workflow_file"
+
       - name: Execute Workflow
         run: |
           workflow_file=$WORKFLOW_FILE
