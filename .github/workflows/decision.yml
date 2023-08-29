@@ -3,7 +3,9 @@ name: Decision
 on:
   push:
     branches:
-      - '*'
+      - dev
+      - master
+      - prod
 
 jobs:
   decide:
@@ -20,7 +22,7 @@ jobs:
           if [[ "${{ steps.branch.outputs.branch }}" == "master" ]]; then
             echo "Running Master Workflow"
             echo "::set-output name=workflow::master.yml"
-          elif [[ "${{ steps.branch.outputs.branch }}" == "production" ]]; then
+          elif [[ "${{ steps.branch.outputs.branch }}" == "prod" ]]; then
             echo "Running Production Workflow"
             echo "::set-output name=workflow::prod.yml"
           elif [[ "${{ steps.branch.outputs.branch }}" == "dev" ]]; then
@@ -31,17 +33,8 @@ jobs:
             exit 1
           fi
 
-      - name: Trigger Relevant Workflow
-        uses: actions/checkout@v2
-
       - name: Run Relevant Workflow
         run: |
-          workflow_file=".github/workflows/${{ steps.decide.outputs.workflow }}"
+          workflow_file="${{ steps.decide.outputs.workflow }}"
           echo "Using Workflow File: $workflow_file"
-          echo "::set-env name=WORKFLOW_FILE::$workflow_file"
-
-      - name: Execute Workflow
-        run: |
-          workflow_file=$WORKFLOW_FILE
-          echo "Running Workflow: $workflow_file"
-          # Add your workflow execution command here
+          # Add logic to run the selected workflow file here
